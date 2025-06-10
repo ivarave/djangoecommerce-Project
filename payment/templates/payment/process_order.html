@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Processing order...</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">...........................</p>
+                </div>
+            </div>
+        </header>
+        <br><br><br>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                
+                    <div class="card">
+                    <div class="card-header">
+                        Order Summary
+                    </div>
+                    <div class="card-body">
+                        {% for product in cart_products %}
+
+                        <div >
+                            <strong>
+                                {{ product.name }} :
+                            </strong>
+                            {% if product.is_sale %}
+                                ₦{{ product.sale_price|intcomma }}
+                            {% else %}
+                                ₦{{ product.price|intcomma }}
+
+                            {% endif %}
+                            
+
+                         
+                            
+                        </div>
+                        
+
+                        
+                        
+
+                        Quantity: 
+                        {% for key, value in quantities.items %}
+                            {% if key == product.id|stringformat:"s" %}
+                                {{ value }}
+                            {% endif %}
+                        {% endfor %}
+                            <br><br>
+                        {% endfor %}
+
+                            <strong>
+                                Subtotal:</strong> ₦{{ totals|intcomma }}<br><br>
+                            </strong>  
+
+                        <div class="text-center">
+                            <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-secondary"> Update cart</a>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    </div>
+                    <br><br>
+
+                    <div class="card">
+                    <div class="card-header">
+                        Shipping Information
+                    </div>
+                    <div class="card-body">
+
+
+                            
+                        <h4>Shipping Information</h4>
+                        <p><strong>Name:</strong> {{ shipping_info.shipping_name|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Email:</strong> {{ shipping_info.shipping_email|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Phone:</strong> {{ shipping_info.shipping_phone|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Address 1:</strong> {{ shipping_info.shipping_address1|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Address 2:</strong> {{ shipping_info.shipping_address2|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>City:</strong> {{ shipping_info.shipping_city|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>State:</strong> {{ shipping_info.shipping_state|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Zipcode:</strong> {{ shipping_info.shipping_zipcode|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <p><strong>Country:</strong> {{ shipping_info.shipping_country|default:"<span style='color: red;'>Not provided</span>"|safe }}</p>
+                        <br>
+                        
+
+
+                        <div class ="text-center my-3">
+                            <a href="{% url 'checkout' %}" class="btn btn-warning">Update Shipping Info</a>
+                            
+                        </div>
+                   
+                    </div>
+                    </div>
+                    <br><br>
+
+                    <div class="card">
+                    <div class="card-header">
+                        Billing Information
+                    </div>
+                    <div class="card-body">
+                        <form method ="POST"action="{% url 'process_order' %}">
+                            {% csrf_token %}
+
+                            {{ billing_form.as_p }}   
+                        </form>
+                        
+                       
+                        
+
+                    </div>  
+                </div>
+                </div>
+                         <div class ="text-center my-3">
+                            <button type = "submit" class ="btn btn-secondary">Pay Now</button>
+                        </div>
+            </div>
+            <br><br>
+        </div>
+
+
+
+
+{% endblock %}

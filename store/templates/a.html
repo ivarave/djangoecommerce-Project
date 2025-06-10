@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+
+<header class="bg-dark py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="text-center text-white">
+            <h1 class="display-4 fw-bolder">Profile</h1>
+            <p class="lead fw-normal text-white-50 mb-0">Profile info</p>
+        </div>
+    </div>
+</header>
+
+
+<div class="container py-5">
+  <div class="row">
+    
+    <div class="col-md-4 mb-4">
+      <div class="card shadow rounded-4 text-center p-4">
+      {% if user.is_authenticated %}
+      
+
+        <h4>{{ user.username }}</h4>
+        <p class="text-muted">{{ user.email }}</p>
+        <p class="text-muted small">Joined on {{ user.date_joined|date:"F j, Y" }}</p>
+        <hr>
+        <h6 class="text-muted">Shipping Address</h6>
+        <p>
+          {{ user.profile.address1|default:"No address added yet." }}<br>
+          {{ user.profile.address2|default:"" }}<br>
+          {{ user.profile.city }} {{ user.profile.zipcode }}<br>
+          {{ user.profile.country }}
+        </p>
+        <a href="{% url 'update_user' %}" class="btn btn-outline-primary btn-sm mt-2">Edit Profile</a>
+        <a href="{% url 'logout' %}" class="btn btn-danger btn-sm mt-2">Logout</a>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="card shadow rounded-4 p-4">
+        <h5 class="mb-4">Recent Orders</h5>
+        {% if recent_orders %}
+        <div class="table-responsive">
+          <table class="table table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for order in recent_orders %}
+              <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.date|date:"M d, Y" }}</td>
+                <td>₦{{ order.total_price }}</td>
+                <td><span class="badge bg-{{ order.status|lower }}">{{ order.status }}</span></td>
+                <td><a href="{% url 'order_detail' order.id %}" class="btn btn-sm btn-outline-secondary">View</a></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p class="text-muted">You haven't placed any orders yet.</p>
+        {% endif %}
+
+        <div class="mt-4 text-end">
+
+
+        {% else %}
+
+        <div class="container">
+          <div class="text-center mx-auto" style="max-width: 500px;">
+            <h4>Hi, Guest</h4>
+            <p>You are not logged in. Please log in or register to view your profile and orders.</p>
+            <div class="mb-3">
+              <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+              <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Register</a>
+            </div>
+            <h5 class="mb-3">Explore Products</h5>
+            <a href="{% url 'category_summary' %}" class="btn btn-outline-secondary">View All Products</a>
+          </div>  
+        </div>
+
+    </div>
+    </div>
+
+
+        {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container fullscreen-center">
+  <div class="text-center" style="max-width: 500px;">
+    <h4>Hi, Guest</h4>
+    <p>You are not logged in. Please log in or register to view your profile and orders.</p>
+    <div class="mb-3">
+      <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Register</a>
+    </div>
+    <h5 class="mb-3">Explore Products</h5>
+    <a href="{% url 'category_summary' %}" class="btn btn-outline-secondary">View All Products</a>
+
+  </div>  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container fullscreen-center">
+  <div class="text-center" style="max-width: 500px;">
+    <h4>Hi, Guest</h4>
+    <p>You are not logged in. Please log in or register to view your profile and orders.</p>
+    <div class="mb-3">
+      <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Register</a>
+    </div>
+    <h5 class="mb-3">Explore Products</h5>
+    <a href="{% url 'category_summary' %}" class="btn btn-outline-secondary">View All Products</a>
+
+  </div>  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh; max-width: 100%;">
+  <div class="text-center shadow p-4 rounded" style="max-width: 500px;">
+    <h4>Hi, Guest</h4>
+    <p>You are not logged in. Please log in or register to view your profile and orders.</p>
+    <div class="mb-3">
+      <a href="{% url 'login' %}" class="btn btn-outline-primary btn-sm me-2">Login</a>
+      <a href="{% url 'register' %}" class="btn btn-danger btn-sm">Register</a>
+    </div>
+    <h5 class="mb-3">Explore Products</h5>
+    <a href="{% url 'category_summary' %}" class="btn btn-outline-secondary">View All Products</a>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+

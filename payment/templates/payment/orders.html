@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block content %}
+
+
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+<div class="card justify-content-center">
+  <div class="card-header text-center  ">
+    <b>Order {{order.id}} - ₦{{order.amount_paid|intcomma}}</b>
+  </div>
+  <div class="card-body text-center">
+    <b>Email:</b> {{ order.email }}<br>
+    {% if order.date_shipped %}
+    <b>Date Ordered: </b> {{ order.date_ordered }} <br>
+    <b>Is Shipped: </b> {{ order.shipped}} <br>
+    <b>Date Shipped: </b>{{order.date_shipped}} <br><br>
+    {% else %}
+    <b> Date Ordered: </b> {{ order.date_ordered }} <br>
+    <b>Is Shipped: </b> {{ order.shipped}} <br>
+    <b>Date Shipped: </b>{{order.date_shipped}} <br><br>
+    {% endif %}    
+    
+    {{ order.name }} <br>
+    <pre>
+        {{ order.shipping_address }} 
+    </pre>
+    {% for item in items %}
+        {{ item.product }} - {{ item.quantity }} - ₦{{ item.price }} <br>
+    {% endfor %}
+    <br><br>
+    {% if not order.shipped %}
+    <b>Mark item as Shipped</b>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="shipping_status" value="true">
+        <button type="submit" class="btn btn-success" >Shipped</button>
+    </form>
+    {% else %}
+    <b>Mark item as Not Shipped</b>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="hidden" name="shipping_status" value="false">
+        <button type="submit" class="btn btn-danger"> Not Shipped</button>
+    </form>
+
+    {% endif %}
+
+
+  </div>
+</div>
+<br><br>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

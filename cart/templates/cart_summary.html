@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Shopping Cart</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">View your cart...</p>
+                </div>
+            </div>
+        </header>
+        <br><br><br>
+
+        <div class="container">
+            {% if cart_products|length != 0 %}
+                {% for product in cart_products %}
+                <div class="container" style="width: 70%;">
+                    <br><br>
+                    <div class="card mb-3">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="{{ product.name }}">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body text-center">
+                                    <h4 class="card-title">{{ product.name }}</h4>
+                                    <h5 class="card-text">{{ product.description }}</h5>
+                                    <br>
+                                    {% if product.is_sale %}
+                                        <h4 style="color: red;" class="fw-bolder">₦{{ product.sale_price|intcomma }}</h4>
+                                        <h5><strike>₦{{ product.price|intcomma }}</strike></h5>
+                                    {% else %}
+                                        <h4>₦{{ product.price|intcomma }}</h4>
+                                    {% endif %}
+                                    <br>
+
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <button class="btn btn-secondary qty-btn minus-btn" data-product="{{ product.id }}">−</button>
+                                        <div id="qty{{ product.id }}" class="qty-display">{{ product.qty }}</div>
+                                        <button class="btn btn-warning qty-btn plus-btn" data-product="{{ product.id }}">+</button>
+                                    </div>
+
+                                    <br><br>
+
+                                    <a href="{% url 'home' %}" class="btn btn-secondary">Home</a>
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-secondary update-cart">Update</button>
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-danger delete-product">Remove item</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </div>
+            
+                {% endfor %}
+
+                <h3><p class="text-end">Total: ₦{{ totals|intcomma }}</p></h3>
+                <div class="text-center">
+                    <a href="{% url 'checkout' %}" class = "btn btn-success">Proceed To Checkout</a>
+                </div>
+                <br><br>
+
+            {% else %}
+                <div class="container" style="width: 70%;" align="center">
+                    <br><br>
+                    <h2>Your cart is empty!</h2>
+                    <p>Please add some products to your cart.</p>
+                    <a href="{% url 'home' %}" class="btn btn-secondary">Go to Products</a>
+                    <br><br>
+                </div>
+            {% endif %}
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                // Increase quantity
+                $('.plus-btn').click(function () {
+                    var productId = $(this).data('product');
+                    var qtyDiv = $('#qty' + productId);
+                    var currentQty = parseInt(qtyDiv.text());
+                    qtyDiv.text(currentQty + 1);
+                });
+
+                // Decrease quantity
+                $('.minus-btn').click(function () {
+                    var productId = $(this).data('product');
+                    var qtyDiv = $('#qty' + productId);
+                    var currentQty = parseInt(qtyDiv.text());
+                    if (currentQty > 1) {
+                        qtyDiv.text(currentQty - 1);
+                    }
+                });
+
+                // Update Cart
+                $(document).on('click', '.update-cart', function (e) {
+                    e.preventDefault();
+                    var productid = $(this).data('index');
+                    var qty = $('#qty' + productid).text();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'cart_update' %}",
+                        data: {
+                            product_id: productid,
+                            product_qty: qty,
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            action: 'post'
+                        },
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function (xhr, errmsg) {
+                            console.error("Error updating cart:", errmsg);
+                        }
+                    });
+                });
+
+                // Delete product
+                $(document).on('click', '.delete-product', function (e) {
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'cart_delete' %}",
+                        data: {
+                            product_id: $(this).data('index'),
+                            csrfmiddlewaretoken: '{{ csrf_token }}',
+                            action: 'post'
+                        },
+                        success: function () {
+                            location.reload();
+                        },
+                        error: function (xhr, errmsg) {
+                            console.error("Error deleting product:", errmsg);
+                        }
+                    });
+                });
+            });
+        </script>
+{% endblock %}

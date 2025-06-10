@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Checkout</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Review you order</p>
+                </div>
+            </div>
+        </header>
+        <br><br><br>
+        <div class="container my-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                
+                    <div class="card">
+                    <div class="card-header">
+                        Order Summary
+                    </div>
+                    <div class="card-body">
+                        {% for product in cart_products %}
+
+                        <div >
+                            <strong>
+                                {{ product.name }} :
+                            </strong>
+                            {% if product.is_sale %}
+                                ₦{{ product.sale_price|intcomma }}
+                            {% else %}
+                                ₦{{ product.price|intcomma }}
+
+                            {% endif %}
+                            
+
+                         
+                            
+                        </div>
+
+                        
+                        
+
+                        Quantity: 
+                        {% for key, value in quantities.items %}
+                            {% if key == product.id|stringformat:"s" %}
+                                {{ value }}
+                            {% endif %}
+                        {% endfor %}
+                            <br><br>
+
+                        
+
+                        
+
+                        {% endfor %}
+
+                        <div>
+                            <strong>
+                                Subtotal:</strong> ₦{{ totals|intcomma }}<br><br>
+                            </strong>  
+                        </div>
+
+                        <div class="text-center">
+                            <a href="{% url 'cart_summary' %}" class="btn btn-sm btn-outline-secondary"> Update cart</a>
+                        </div>
+                        
+                    </div>
+                    </div>
+                    <br><br>
+                    <div class="card">
+                    <div class="card-header">
+                        Shipping Information
+                    </div>
+                    <div class="card-body">
+                    <form method="POST" action="{% url 'billing_info' %}">
+                        {% csrf_token %}
+
+                        {{ shipping_form.as_p }}
+
+                        <div class="text-center my-3">
+                            <button type="submit" class="btn btn-secondary">Continue to billing</button>
+                        </div>
+                    </form>
+
+                    </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+
+
+
+{% endblock %}

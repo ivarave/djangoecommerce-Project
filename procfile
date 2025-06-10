@@ -1,0 +1,2 @@
+web: gunicorn store.wsgi --logfile
+web: python manage.py migrate && gunicorn store.wsg
