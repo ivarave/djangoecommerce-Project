@@ -203,7 +203,7 @@ def process_order(request):
             
             
             
-            messages.success(request,"Order placed")
+            
 
             if payment_form.is_valid():
                 # Process payment here if needed
