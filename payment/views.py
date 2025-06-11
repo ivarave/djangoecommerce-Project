@@ -63,7 +63,7 @@ def initialize_payment(request):
         else:
             return JsonResponse({"error": "Payment initialization failed"})
 
-    return render(request, 'payment/payment.html')
+    return render(request, 'payment/payment_sucess.html')
 
 def verify_payment(request):
     ref = request.GET.get('reference')
