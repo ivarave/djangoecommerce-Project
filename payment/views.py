@@ -6,11 +6,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from store.models import Product,Profile
 import datetime
-import requests
-from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.urls import reverse
 
 
 def orders(request,pk):
@@ -39,51 +34,7 @@ def orders(request,pk):
     else:
         messages.error(request, 'Access denied')
         return redirect('home')
-    
-def initialize_payment(request):
-    if request.method == 'POST':
-        email = request.POST['email']
-        amount = int(request.POST['amount']) * 100  # Paystack uses kobo
 
-        headers = {
-            "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
-            "Content-Type": "application/json"
-        }
-
-        callback_url = request.build_absolute_uri(reverse('verify-payment'))
-
-        data = {
-            "email": email,
-            "amount": amount,
-            "callback_url": callback_url
-        }
-
-        response = requests.post('https://api.paystack.co/transaction/initialize',
-                                 headers=headers, json=data)
-        response_data = response.json()
-
-        if response_data.get('status'):
-            auth_url = response_data['data']['authorization_url']
-            return redirect(auth_url)
-        else:
-            return JsonResponse({"error": "Payment initialization failed"})
-
-    return render(request, 'payment/payment_sucess.html')
-
-def verify_payment(request):
-    ref = request.GET.get('reference')
-    headers = {
-        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"
-    }
-    url = f"https://api.paystack.co/transaction/verify/{ref}"
-    response = requests.get(url, headers=headers)
-    response_data = response.json()
-
-    if response_data['data']['status'] == 'success':
-        # Update order/payment status in DB here
-        return render(request, 'payment/success.html')
-    else:
-        return render(request, 'payment/failed.html')
 
 
 def not_shipped_dash(request):
