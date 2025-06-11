@@ -47,7 +47,7 @@ class Order(models.Model):
     email = models.EmailField(max_length=200)
     phone = models.CharField(max_length=200)
     shipping_address = models.TextField(max_length=15000)
-    amount_paid = models.DecimalField(max_digits = 10, decimal_places=2)
+    amount_paid = models.DecimalField(max_digits = 10, decimal_places=0)
     date_ordered = models.DateTimeField(auto_now_add=True)
     shipped = models.BooleanField(default =False)
     date_shipped = models.DateTimeField(blank=True, null=True)
@@ -69,7 +69,7 @@ class OrderItem(models.Model):
     
     
     quantity = models.PositiveBigIntegerField(default=1)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(max_digits=10, decimal_places=0)
     
     def __str__(self):
         return f'Order Item - {str(self.id)}'
