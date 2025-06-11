@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-=$v^=@%y#c=@ko##_hs4up0p+%gpy279zksq#6b$(6vz+&h$#z
 DEBUG = False
 
 ALLOWED_HOSTS = ['.onrender.com', 'localhost', '127.0.0.1']
-CSRF_TRUSTED_ORIGINS = ['https://djangoecommerce-project-production.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://djangoecommerce-project-production.up.railway.app']    
 
 
 # Application definition
@@ -126,7 +126,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-STATICFILES_DIRS = ['static/']
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
