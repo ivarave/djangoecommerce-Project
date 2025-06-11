@@ -10,6 +10,7 @@ import requests
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.urls import reverse
 
 
 def orders(request,pk):
@@ -48,9 +49,13 @@ def initialize_payment(request):
             "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
             "Content-Type": "application/json"
         }
+
+        callback_url = request.build_absolute_uri(reverse('verify-payment'))
+
         data = {
             "email": email,
-            "amount": amount
+            "amount": amount,
+            "callback_url": callback_url
         }
 
         response = requests.post('https://api.paystack.co/transaction/initialize',
