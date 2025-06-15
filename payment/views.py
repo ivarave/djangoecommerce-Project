@@ -6,6 +6,55 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from store.models import Product,Profile
 import datetime
+import requests
+from django.http import JsonResponse
+from django.conf import settings
+import requests
+
+
+def initialize_payment(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        amount = int(request.POST.get('amount')) * 100  # convert to kobo
+
+        headers = {
+            "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+            "Content-Type": "application/json",
+        }
+
+        data = {
+            "email": email,
+            "amount": amount,
+        }
+
+        response = requests.post(
+            'https://api.paystack.co/transaction/initialize',
+            headers=headers,
+            json=data
+        )
+        response_data = response.json()
+
+        if response_data.get('status'):
+            # Redirect user to Paystack payment page
+            return redirect(response_data['data']['authorization_url'])
+        else:
+            return JsonResponse({"error": "Payment initialization failed."})
+    return render(request, 'payment/initiate.html')
+
+def verify_payment(request):
+    reference = request.GET.get('reference')
+    headers = {
+        "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"
+    }
+    url = f"https://api.paystack.co/transaction/verify/{reference}"
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+
+    if data['data']['status'] == 'success':
+        # Update your order model, mark as paid
+        return render(request, 'payment/success.html', {'data': data})
+    return render(request, 'payment/failed.html')
 
 
 def orders(request,pk):

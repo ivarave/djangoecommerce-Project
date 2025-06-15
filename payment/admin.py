@@ -3,7 +3,6 @@ from .models import shippingAddress, Order, OrderItem
 from django.contrib.auth.models import User
 
 
-
 admin.site.register(shippingAddress)
 admin.site.register(Order)
 admin.site.register(OrderItem)
