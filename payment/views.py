@@ -10,6 +10,7 @@ import requests
 from django.http import JsonResponse
 from django.conf import settings
 import requests
+from django.urls import reverse
 
 
 def initialize_payment(request):
@@ -43,6 +44,11 @@ def initialize_payment(request):
 
 def verify_payment(request):
     reference = request.GET.get('reference')
+
+    if not reference:
+        messages.error(request, "No payment reference found.")
+        return redirect('payment_failed')
+
     headers = {
         "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}"
     }
@@ -51,10 +57,12 @@ def verify_payment(request):
     response = requests.get(url, headers=headers)
     data = response.json()
 
-    if data['data']['status'] == 'success':
-        # Update your order model, mark as paid
-        return render(request, 'payment/success.html', {'data': data})
-    return render(request, 'payment/failed.html')
+    if data.get('data', {}).get('status') == 'success':
+        # Optionally update your order status here using the reference
+        return redirect('payment_success')
+    else:
+        messages.error(request, "Payment verification failed.")
+        return redirect('payment_failed')
 
 
 def orders(request,pk):
@@ -122,8 +130,13 @@ def shipped_dash(request):
 		return redirect('home')
 
 
-def payment_sucess(request):
-    return render(request, 'payment/payment_sucess.html', {})
+def payment_success(request):
+    return render(request, 'payment/payment_success.html', {})
+
+def payment_failed(request):
+    return render(request, 'payment/failed.html', {})
+
+
 def checkout(request):
     cart = Cart(request)
     cart_products = cart.get_products()
@@ -247,16 +260,33 @@ def process_order(request):
                     del request.session[key]
             current_user = Profile.objects.filter(user__id = request.user.id)
             current_user.update(old_cart="")
-                
-            
-            
-            
-            
-            
 
             if payment_form.is_valid():
-                # Process payment here if needed
-                return redirect('payment_sucess')
+                headers = {
+                    "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
+                    "Content-Type": "application/json",
+                }
+
+                data = {
+                    "email": email,
+                    "amount": int(amount_paid) * 100, 
+                    "callback_url": request.build_absolute_uri(reverse('verify_payment'))
+                }
+
+                response = requests.post(
+                    'https://api.paystack.co/transaction/initialize',
+                    headers=headers,
+                    json=data
+                )
+
+                response_data = response.json()
+
+                if response_data.get('status'):
+                    return redirect(response_data['data']['authorization_url'])
+                else:
+                    messages.error(request, "Payment initialization failed.")
+                    return redirect('billing_info')
+
             else:
                 messages.error(request, "Invalid payment data.")
                 return redirect('billing_info')
