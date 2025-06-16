@@ -171,33 +171,33 @@ def checkout(request):
     })
 
 def billing_info(request):
-    if request.user.is_authenticated:
-        if request.method == 'POST':
-            cart = Cart(request)
-            cart_products = cart.get_products()
-            quantities = cart.get_quantities()
-            totals = cart.cart_total()
-
-            my_shipping = request.POST.dict()
-            request.session['my_shipping'] = my_shipping
-            print("Shipping info saved in session:", my_shipping)
-
-            shipping_form = shippingAddress.objects.filter(user=request.user).last()
-            billing_form = paymentForm()
-            return render(request, 'payment/billing_info.html', {
-                'cart_products': cart_products,
-                'quantities': quantities,
-                'totals': totals,
-                'shipping_info': shipping_form,
-                'billing_form': billing_form
-            })
-        else:
-            messages.error(request, 'Access denied: must use POST to access billing')
-            return redirect('checkout')
-    else:
-        messages.error(request, "Access denied\n"
-                       "To proceed you must login to your existing account, else register a new one")
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in.")
         return redirect('profile')
+
+    cart = Cart(request)
+    cart_products = cart.get_products()
+    quantities = cart.get_quantities()
+    totals = cart.cart_total()
+
+    # Store shipping info from POST into session for later use
+    if request.method == 'POST':
+        my_shipping = request.POST.dict()
+        request.session['my_shipping'] = my_shipping
+        messages.success(request, "Shipping information saved.")
+
+    # Get the latest shipping info
+    shipping_info = shippingAddress.objects.filter(user=request.user).last()
+    billing_form = paymentForm()  # Render the billing form
+
+    return render(request, 'payment/billing_info.html', {
+        'cart_products': cart_products,
+        'quantities': quantities,
+        'totals': totals,
+        'shipping_info': shipping_info,
+        'billing_form': billing_form
+    })
+
 
     
 def process_order(request):
