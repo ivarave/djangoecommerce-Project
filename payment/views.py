@@ -17,6 +17,9 @@ def initialize_payment(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         amount = int(request.POST.get('amount')) * 100  # convert to kobo
+        print("EMAIL:", email)
+        print("AMOUNT:", amount)
+
 
         headers = {
             "Authorization": f"Bearer {settings.PAYSTACK_SECRET_KEY}",
@@ -35,12 +38,14 @@ def initialize_payment(request):
         )
         response_data = response.json()
 
+        print("Paystack response:", response_data)  # 🔍 Add this
+
         if response_data.get('status'):
-            # Redirect user to Paystack payment page
             return redirect(response_data['data']['authorization_url'])
         else:
-            return JsonResponse({"error": "Payment initialization failed."})
-    return render(request, 'payment/initiate.html')
+            messages.error(request, response_data.get("message", "Payment initialization failed."))
+            return redirect('billing_info')  # 👈 Better UX
+    return redirect('checkout')
 
 def verify_payment(request):
     reference = request.GET.get('reference')

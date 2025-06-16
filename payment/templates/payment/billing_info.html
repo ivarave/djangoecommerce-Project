@@ -80,12 +80,13 @@
 
                         <!-- Paystack-required fields -->
                         <input type="hidden" name="email" value="{{ shipping_info.shipping_email }}">
-                        <input type="hidden" name="amount" value="{{ totals }}">
+                        <input type="hidden" name="amount" value="{{ totals|floatformat:0 }}">
 
                         <div class="text-center my-3">
                             <button type="submit" class="btn btn-secondary">Pay Now</button>
                         </div>
                     </form>
+
                 </div>
             </div>
 
