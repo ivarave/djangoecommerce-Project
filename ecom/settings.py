@@ -20,7 +20,7 @@ SECRET_KEY = 'django-insecure-=$v^=@%y#c=@ko##_hs4up0p+%gpy279zksq#6b$(6vz+&h$#z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = ['djangoecommerce-project-production.up.railway.app']
+ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = ['https://djangoecommerce-project-production.up.railway.app']    
 
 
@@ -79,14 +79,14 @@ WSGI_APPLICATION = 'ecom.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': BASE_DIR / 'db.sqlite3',
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': os.environ['DB_PASSWORD'],
-        'HOST': 'yamabiko.proxy.rlwy.net',
-        'PORT': '32517',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'railway',
+        # 'USER': 'postgres',
+        # 'PASSWORD': os.environ['DB_PASSWORD'],
+        # 'HOST': 'yamabiko.proxy.rlwy.net',
+        # 'PORT': '32517',
     }
 }
 
