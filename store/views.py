@@ -9,7 +9,6 @@ from .forms import SignUpForm, UpdateUserForm, ChangePasswordForm, UserInfoForm
 from django.db.models import Q
 import json
 from cart.cart import Cart
-
 from payment.forms import ShippingForm
 from payment.models import shippingAddress
 
@@ -124,13 +123,10 @@ def update_user(request):
         
 def update_info(request):
     if request.user.is_authenticated:
-        # Get the current user's profile
         current_user = Profile.objects.get(user=request.user)
 
-        # Get or create the shipping address (avoids crash if not created yet)
         shipping_user, created = shippingAddress.objects.get_or_create(user=request.user)
 
-        # Bind POST data if submitted
         if request.method == 'POST':
             form = UserInfoForm(request.POST, instance=current_user)
             shipping_form = ShippingForm(request.POST, instance=shipping_user)
@@ -138,7 +134,6 @@ def update_info(request):
             form_valid = form.is_valid()
             shipping_valid = shipping_form.is_valid()
 
-            # Save them individually if valid
             if form_valid:
                 form.save()
             else:
@@ -148,17 +143,14 @@ def update_info(request):
                 shipping_form.save()
                 
             if not form_valid and not shipping_valid:
-                # If both forms are invalid, show a general error
                 messages.error(request, 'Please correct the errors in both forms.')
 
 
-            # Redirect only if both forms are valid
             if form_valid and shipping_valid:
                 messages.success(request, 'Your profile and shipping information have been updated successfully.')
                 return redirect('profile')
 
         else:
-            # Initial GET request — display prefilled forms
             form = UserInfoForm(instance=current_user)
             shipping_form = ShippingForm(instance=shipping_user)
 
