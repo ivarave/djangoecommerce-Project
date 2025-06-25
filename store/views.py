@@ -104,8 +104,10 @@ def category(request, foo):
     
 def category_summary(request):
     category = Category.objects.all()
-    return render(request, 'category_summary.html', { 'categories': category })
-
+    paginator = Paginator(category,1000000000000000000)  
+    page_number = request.GET.get('page')
+    page_obj_categories = paginator.get_page(page_number)
+    return render(request, 'category_summary.html', { 'page_obj_categories': page_obj_categories})
 
 
 def update_user(request):
