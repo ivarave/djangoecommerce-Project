@@ -11,6 +11,8 @@ import json
 from cart.cart import Cart
 from payment.forms import ShippingForm
 from payment.models import shippingAddress
+from django.core.paginator import Paginator
+
 
 
 
@@ -18,7 +20,10 @@ from payment.models import shippingAddress
 
 def home(request):
     products = Product.objects.all()
-    return render(request, 'home.html', {'products': products})
+    paginator = Paginator(products,4)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'home.html', {'page_obj': page_obj})
 
 def about(request):
     return render(request, 'about.html',{})
